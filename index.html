@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Data Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        .loading {
+            text-align: center;
+            font-size: 1.2em;
+            color: #555;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Stock Data</h1>
+
+    <div id="loading" class="loading">Loading data...</div>
+    <div id="error" class="error" style="display: none;"></div>
+    <table id="dataTable" style="display: none;">
+        <thead>
+            <tr id="tableHeaders"></tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dataTable = document.getElementById('dataTable');
+            const tableHeaders = document.getElementById('tableHeaders');
+            const tableBody = document.getElementById('tableBody');
+            const loadingDiv = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+            const apiUrl = 'https://ws.api.cnyes.com/ws/api/v2/universal/quote?column=C_FORMAT&type=TRMAIN';
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loadingDiv.style.display = 'none'; // Hide loading message
+
+                    if (data && data.data && Array.isArray(data.data)) {
+                        const items = data.data;
+
+                        if (items.length > 0) {
+                            // Get all possible keys to form headers, ensuring 'name' is first if present
+                            let allKeys = new Set();
+                            items.forEach(item => {
+                                Object.keys(item).forEach(key => allKeys.add(key));
+                            });
+
+                            let sortedKeys = Array.from(allKeys).sort((a, b) => {
+                                if (a === 'name') return -1; // 'name' comes first
+                                if (b === 'name') return 1;
+                                return a.localeCompare(b);
+                            });
+
+                            // Create table headers
+                            sortedKeys.forEach(key => {
+                                const th = document.createElement('th');
+                                th.textContent = key.replace(/_/g, ' ').toUpperCase(); // Make headers more readable
+                                tableHeaders.appendChild(th);
+                            });
+
+                            // Populate table rows
+                            items.forEach(item => {
+                                const tr = document.createElement('tr');
+                                sortedKeys.forEach(key => {
+                                    const td = document.createElement('td');
+                                    td.textContent = item[key] !== undefined ? item[key] : ''; // Handle missing keys
+                                    tr.appendChild(td);
+                                });
+                                tableBody.appendChild(tr);
+                            });
+
+                            dataTable.style.display = 'table'; // Show the table
+                        } else {
+                            errorDiv.textContent = 'No data found in the response.';
+                            errorDiv.style.display = 'block';
+                        }
+                    } else {
+                        errorDiv.textContent = 'Invalid data format received.';
+                        errorDiv.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    loadingDiv.style.display = 'none'; // Hide loading message
+                    errorDiv.textContent = `Failed to fetch data: ${error.message}`;
+                    errorDiv.style.display = 'block';
+                    console.error('Error fetching data:', error);
+                });
+        });
+    </script>
+
+</body>
+</html>
