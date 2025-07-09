@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const excludedKeys = new Set([
         "0",        // Symbol
         "800041",
+        "200067",
         "200008",   
         "200232",
         "200013",
