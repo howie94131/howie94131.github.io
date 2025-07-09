@@ -1,5 +1,8 @@
 // script.js
-
+function unixConvert(timestamp) {
+    const date = new Date(unixTimestamp * 1000);
+    return date.toLocaleString();
+}
 document.addEventListener('DOMContentLoaded', function() {
     const dataTable = document.getElementById('dataTable');
     const tableHeaders = document.getElementById('tableHeaders');
@@ -22,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
         "800002",
         "800041"
     ]);
+
 
     fetch(apiUrl)
         .then(response => {
@@ -49,12 +53,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Define readable names for the remaining keys
                     const readableNames = {
-                        "200009": "Name (Chinese)",
-                        "200024": "Name (English)",
-                        "200026": "Last Price",
-                        "200040": "Change (%)",
-                        "200045": "Open",
-                        "200007": "Timestamp",
+                        "200009": "中文",
+                        "200024": "英文",
+                        "200026": "當前價",
+                        "200040": "變動 (%)",
+                        "200045": "漲跌",
+                        "200007": "時間",
                         // Add more mappings as you identify what each number represents
                     };
 
@@ -86,7 +90,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         const tr = document.createElement('tr');
                         sortedKeys.forEach(key => { // Iterate over sortedKeys (which are already filtered)
                             const td = document.createElement('td');
-                            td.textContent = item[key] !== undefined && item[key] !== null ? item[key] : '';
+                            if (key == 200007) {
+                                td.textContent = item[key] !== undefined && item[key] !== null ? unixConvert(item[key]) : '';
+                            } else {
+                                td.textContent = item[key] !== undefined && item[key] !== null ? item[key] : '';
+                            }
                             tr.appendChild(td);
                         });
                         tableBody.appendChild(tr);
