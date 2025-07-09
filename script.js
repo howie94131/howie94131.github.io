@@ -9,21 +9,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const tableBody = document.getElementById('tableBody');
     const loadingDiv = document.getElementById('loading');
     const errorDiv = document.getElementById('error');
-    const apiUrl = 'https://ws.api.cnyes.com/ws/api/v2/universal/quote?column=C_FORMAT&type=TRMAIN';
+    const apiUrl = 'https://ws.api.cnyes.com/ws/api/v2/universal/quote?type=TRMAIN&column=F_FORMAT';
 
     // List of keys to EXCLUDE from the table display
     const excludedKeys = new Set([
         "0",        // Symbol
-        "200013",
-        "200038",   // Change (raw value) - based on your previous output, "Change" usually means 200038
-        "200039",
-        "200041",
-        "200042",   // Low
-        "200043",   // High
-        "200067",
+        "800041",
+        "200008",   
         "200232",
-        "800002",
-        "800041"
+        "200013",
+        "800002"
     ]);
 
 
@@ -56,8 +51,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         "200009": "中文",
                         "200024": "英文",
                         "200026": "當前價",
-                        "200040": "變動 (%)",
-                        "200045": "漲跌",
+                        "200044": "變動 (%)",
+                        "200027": "漲跌",
                         "200007": "時間",
                         // Add more mappings as you identify what each number represents
                     };
@@ -65,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Sort keys for consistent column order
                     let sortedKeys = Array.from(allKeys).sort((a, b) => {
                         // Prioritize specific display order if desired, otherwise alphabetical
-                        const order = ["200024", "200009", "200026", "200040", "200045", "200007"]; // Example desired order for displayed columns
+                        const order = ["200007", "200024", "200009", "200026", "200044", "200027"]; // Example desired order for displayed columns
                         const indexA = order.indexOf(a);
                         const indexB = order.indexOf(b);
 
