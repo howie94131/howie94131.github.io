@@ -1,6 +1,6 @@
 // script.js
 function unixConvert(timestamp) {
-    const date = new Date(unixTimestamp * 1000);
+    const date = new Date(timestamp * 1000);
     return date.toLocaleString();
 }
 document.addEventListener('DOMContentLoaded', function() {
